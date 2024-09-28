@@ -1,0 +1,135 @@
+---
+title: "Mission1"
+author: "Chris Jenks"
+date: "2024-09-18"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Mission 1 STAT E-100
+
+# Required Libraries
+```{r}
+library(readxl)
+library(dplyr)
+library(knitr)
+library(ggplot2)
+```
+# Import the data and assign it a variable
+```{r}
+survey_xlsx_cleaned_mission1 = read_excel("C:/Users/User/Desktop/HarvardExtensionSchool/Stat E 100/survey_xlsx_cleaned.mission1.xlsx")
+```
+# Question 6
+## Create a Summary Table for Count, Percentage, Proportion
+```{r}
+summary_table = survey_xlsx_cleaned_mission1 %>%
+     group_by(Country) %>%
+     summarise(
+        Count = n(),
+        Proportion = n() / nrow(survey_xlsx_cleaned_mission1),
+        Percentage = (n() / nrow(survey_xlsx_cleaned_mission1)) * 100) %>%
+        arrange(desc(Count))
+```
+
+# Kable the Summary Table
+```{r}
+# Note for ease of readability, I have only included the top ten rows
+kable(head(summary_table, 10), caption = "Summary Table of Country Responses")
+```
+
+
+### In this table the country is listed by count, proportion, and percentage. The countries are listed in descending order by count. The United States is the highest, followed by the United Kingdom, Canada, Germany, Ireland, the Netherlands, Australia, France, India, and New Zealand. 
+
+# Question 7
+## Bar Graph of the variable Country by Count
+```{r}
+# Note for ease of readability, I have only included the top 10 countries by count
+top_10_countries = head(summary_table, 10)
+ggplot(top_10_countries, aes(x = reorder(Country, -Count), y = Count)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(title = "Top 10 Countries by Response Count",
+       x = "Country",
+       y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+### In this bar graph of response county by Country, the count is on the vertical (y) axis and the country is on the horizontal axis (x). For ease of readability, only the top 10 countries are listed with the United States being the highest, followed by the United Kingdom, Canada, Germany, Ireland, the Netherlands, Australia, France, India, and New Zealand 
+
+# Question 8
+## Pie Chart of the Variable Country by Count
+```{r}
+ggplot(top_10_countries, aes(x = "", y = Count, fill = Country)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") + 
+  labs(title = "Top 10 Countries by Response Count") +
+  theme_void() +  
+  theme(legend.position = "right") 
+```
+
+### The pie chart is listing the top 10 country response count. The different country have different colors.  For ease of readability, only the top 10 countries are listed with the United States being the highest, followed by the United Kingdom, Canada, Germany, Ireland, the Netherlands, Australia, France, India, and New Zealand.
+
+# Question 9
+## Contingency Table for Country and Wellness Program
+```{r}
+
+
+contingency_table_1 = table(survey_xlsx_cleaned_mission1$Country, survey_xlsx_cleaned_mission1 $wellness_program)
+print(contingency_table_1)
+
+```
+
+### This contingency table shows the counts for the countries by wellness program. The thre responses for if a wellness program were present are the following: Don't know, no, and yes.In the United States, 128 answered I don't know, 454 answered no, and 166 answered yes 
+
+
+# Question 10
+## Mosaic Chart of Countries by Count and Wellness Program
+```{r}
+wellness_summary = survey_xlsx_cleaned_mission1 %>%
+  group_by(Country, wellness_program) %>%
+  summarise(Count = n(), .groups = 'drop')
+
+top_countries = wellness_summary %>%
+  group_by(Country) %>%
+  summarise(Total = sum(Count)) %>%
+  top_n(3, Total) %>%
+  pull(Country)
+
+filtered_summary = wellness_summary %>%
+  filter(Country %in% top_countries)
+
+
+mosaicplot(Count ~ wellness_program + Country, 
+           data = filtered_summary, 
+           main = "Mosaic Plot of Wellness Program by Top 10 Countries",
+           xlab = "Country", 
+           ylab = "Wellness Program", 
+           color = TRUE)
+
+```
+
+### This shows a mosaic plot by country response count and if a wellness program is present. The rectangles that are slightly colored to represent the different responses.For ease of readability, only the first 3 countries are shown. Of note, I think that mosaic charts are the least informative of all the charts that have been created in this mission. They are very difficult to read and as such can lead to conclusions that the writer/creator of the data did not intend.   
+
+# Question 11
+## Bar Graph of the Country and Wellness Program by Count
+```{r}
+top_countries = data.frame(Country = top_countries)
+summary_data = survey_xlsx_cleaned_mission1 %>%
+    filter(Country %in% top_countries$Country) %>%
+    group_by(Country, wellness_program) %>%
+    summarise(Count = n(), .groups = 'drop')
+ggplot(data = summary_data, 
+       aes(x = Country, y = Count, fill = wellness_program)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Wellness Program Participation by Country (Top 3)",
+       x = "Country",
+       y = "Count of Wellness Program Participants",
+       fill = "Wellness Program") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+### The bar graph demonstrates the different countries on the horizontal (x) axis and the wellness program on the vertical (y) axis. The different responses to the wellness program are color coded with the color legend on the right. The total fo the three responses in the total response by count for the different contries. For ease of readability, I have only included the top 3 countries. 

@@ -1,0 +1,96 @@
+---
+title: "Mission 2"
+author: "Chris Jenks"
+date: "2024-09-24"
+output: word_document
+---
+
+# Mission 2 STAT E- 100
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Libraries
+```{r}
+library(readxl)
+library(ggplot2)
+```
+
+# Import Data and Assign a Variable
+```{r}
+cpa = read_excel("cpa.xlsx")
+```
+
+# 2)	Using the variable ‘Income’, calculate the mean and median income. What does the difference in the mean and median incomes suggest about the skewness of the distribution of income?
+
+```{r}
+summary(cpa$Income)
+```
+## The mean is 53144 and the median is 51524
+The mean is higher than the medial indicating a rightward or positive skew. We can evaluate the max which is 666666 indicating that a small number of higher income earners are causing this (as the mean is only 53144). We can further evaluate this looking at the interquartile ranges (IQR 35336, 68858) again demonstrating only a few outliers skewing the data. 
+
+
+# 3)	Using the variable ‘Year_Birth’, generate a density plot. Customers	 from around which year most frequently represented in this sample? How might this information benefit the owner of the business? If the store owner knew the year of birth of frequent customers, what action(s) might the store owner be able to take?
+```{r}
+ggplot(cpa, aes(x = Year_Birth)) +
+    geom_density(fill = "blue", alpha = 0.5) +
+    labs(title = "Density Plot of Year of Birth",
+         x = "Year of Birth",
+         y = "Density") +
+    scale_x_continuous(breaks = seq(1940, 2020, by = 10)) +  
+    theme_minimal()
+```
+### Customers from around 1975. A business owner could tailor certain products to this age demographic (product selection).The business owner could use targeted ads to this age demographic. The store owner could use personalized communications to improve customer expericence to include: birthday discounts, special offers etc to enhance customer loyalty. 
+
+# Using the variable ‘Marital_Status, generate a table listing the percentage of marital statuses. If the store owner knew the distribution of marital status across customers, what action(s) might the store owner be able to take?
+
+```{r}
+marital_table = table(cpa$Marital_Status)
+marital_percentages = prop.table(marital_table) * 100
+marital_percentage_table <- as.data.frame(marital_percentages)
+colnames(marital_percentage_table) = c("Marital_Status", "Percentage")
+print(marital_percentage_table)
+```
+### In addition to the above: targeted marketing, products, personalized communications, the business owner might look at event planning, creating of loyalty programs, or try to engage their customer in community involvement. The store owner could organize events that specificially cater to a specific marital status (date nights, mixes, couples night). The business owner may implement loyalty programs targeted toward marital status: discounts for families. The store owner could engage in community events supporting local events or sports. 
+
+# 6)	If you compare the average purchases from the web (NumWebPurchases), catalogs (NumCatalogPurchases), and in-store (NumStorePurchases), which is the highest? If the store owner knew where the orders were coming in from, what action(s) might the store owner be able to take?
+```{r}
+mean(cpa$NumWebPurchases)
+mean(cpa$NumCatalogPurchases)
+mean(cpa$NumStorePurchases)
+```
+### The in customer tend to purchase more when they are in the store. This could be do to being able to physically touch the product or the salesforce. Customer also like to purchase items from the website (though slightly less than in store). This might be do to ease of browsing and information provided. Customer liked to buy products via catalogs the least. This might be do to having a bulky catalog, difficult to find the products, and not being able to physically touch the produt. This can help the business owner to focal their efforts with their brick and motar store and their website. The business owner can then run some cost analysis to see if it is profitable to continue to produce the catalog. 
+
+# What is the 95th percentile for MntGoldProds? Explain the interpretation of this value in context to somebody who is not familiar with percentiles
+```{r}
+quantile(cpa$MntGoldProds, probs = c(.95))
+```
+### If there were 100 customers, 95 of them would have spent $165.05 or less. 5 of them would have spent more than $165.05. 
+
+# Compare the standard deviation of MntMeatProducts and MntGoldProds. Explain the interpretation of these values in context to somebody who is not familiar with the idea of a standard deviation
+```{r}
+sd(cpa$MntMeatProducts)
+sd(cpa$MntGoldProds)
+```
+### The larger standard deviation of MntMeatProductssuggests that there are significant differences in spending habits, with some customers possibly making very high purchases compared to the average.  The smaller standard deviation of MntGoldProds means that most customers' spending amounts are closer to the average, suggesting less variability in how much people spend on gold products.
+
+
+# Using the variable ‘Recency’, generate a boxplot. Indicate the actual or approximate value of Q1 (25th percentile), Q2 (50th percentile), and Q3 (75th percentile). Interpret in context what these values mean for the business.
+```{R}
+my_boxplot = boxplot(cpa$Recency,
+                      main = "Last Visit Across Customers",
+                      xlab = "Recency",
+                      col = "lightgreen",
+                      border = "darkgreen",
+                      horizontal = TRUE,
+                      notch = TRUE)
+class(my_boxplot) # List
+my_boxplot
+my_boxplot$stats[2,1] # 25th percentile
+my_boxplot$stats[3,1] # 50th percentile
+my_boxplot$stats[4,1] # 75th percentile
+median(cpa$Recency) # Median
+```
+
+
+### Q1 = 24: This value indicates that 25% of customers have a recency score of 24 or less. Q2  = 49: This value indicates that half of the customers have a recency score of 49 or less. Q3 = 74: This value indicates that 75% of customers have a recency score of 74 or less. This would indicate that the majority of customer have not made a recent purchase (Q3 = 74), half of the customers have not made a purchase in the past 49 days (Q2 = 49), and a small portion of the customers have made a recent purchase and are likely active customers. 
