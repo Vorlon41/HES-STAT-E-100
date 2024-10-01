@@ -1,0 +1,146 @@
+---
+title: "Mission 3"
+author: "Chris Jenks"
+date: "2024-10-01"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+library(readxl)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# STAT E - 100 Mission 3
+
+```{r}
+# Input the dataset
+housing = read_excel("C:/Users/User/Desktop/HarvardExtensionSchool/Stat E 100/Mission 3/Housing.xlsx")
+```
+## 1.	Generate a table of proportions with the variable airconditioning on one axis, and hotwaterheating on the other axis. Set the margins as TRUE. Paste the R code and the output from R.
+
+```{r}
+contingency_table = table(housing$airconditioning, housing$hotwaterheating)
+dimnames(contingency_table) <- list(
+  AirConditioning = c("No", "Yes"), 
+  HotWaterHeating = c("No", "Yes")   
+)
+proportions_table = prop.table(contingency_table) * 100
+proportions_with_margins = addmargins(proportions_table)
+print(proportions_with_margins)
+```
+## 2.	From the table from question 1, report the value for the following:
+P(no air conditioning and no hot water heating) = **64.1 % (.640366972)**
+
+## 3.	Generate a table of counts that has furnishingstatus on one axis, and airconditioning on another axis. Set the margins as TRUE. Include the R code and output from R.
+```{r}
+count_table <- table(housing$furnishingstatus, housing$airconditioning)
+
+dimnames(count_table) = list(
+  FurnishingStatus = unique(housing$furnishingstatus),  
+  AirConditioning = unique(housing$airconditioning)     
+)
+count_with_margins = addmargins(count_table)
+print(count_with_margins)
+```
+## 4.	For the output from question 3, calculate the following:
+P(has air conditioning | furnished) = **78/140 (furnished with air / total furnished) which is 55.7% (0.55714286)**
+
+## 5.	For the output from question 3, calculate the following:
+P(has air conditioning | unfurnished) = **133/177 (unfurnished with air / total unfurnished) which is 74.7 (0.7419101)**
+
+## 6 Determine using the data set whether the probability of a house having air conditioning and whether it is furnished are independent events. Show any calculations that lead up to the decision of whether the two events are dependent or independent.
+
+```{r}
+data_matrix = matrix(
+  c(78, 62, 140, 
+    162, 65, 227,
+    133, 45, 178, 
+    373, 172, 545),
+  nrow = 4,
+  byrow = TRUE
+)
+dimnames(data_matrix) = list(
+  FurnishingStatus = c("furnished", "semi-furnished", "unfurnished", "Sum"),
+  AirConditioning = c("yes", "no", "Sum")
+)
+
+total_houses = data_matrix["Sum", "Sum"]
+furnished_with_ac = data_matrix["furnished", "yes"]
+total_furnished = data_matrix["furnished", "Sum"]
+total_with_ac = data_matrix["Sum", "yes"]
+p_ac = total_with_ac / total_houses
+p_furnished = total_furnished / total_houses
+p_ac_and_furnished = furnished_with_ac / total_houses
+p_ac_times_p_furnished = p_ac * p_furnished
+
+cat("P(A): Probability of having air conditioning =", p_ac, "\n")
+cat("P(B): Probability of being furnished =", p_furnished, "\n")
+cat("P(A ∩ B): Probability of having air conditioning and being furnished =", p_ac_and_furnished, "\n")
+cat("P(A) * P(B) =", p_ac_times_p_furnished, "\n\n")
+
+if (abs(p_ac_and_furnished - p_ac_times_p_furnished) < 1e-6) {
+  cat("The events are independent.\n")
+} else {
+  cat("The events are dependent.\n")
+}
+```
+
+```{r}
+cancer_exposure_table = matrix(
+  c(354, 143, 293, 511),
+  nrow = 2,
+  byrow = TRUE
+)
+
+dimnames(cancer_exposure_table) = list(
+  Exposure = c("Exposed", "Not_Exposed"),
+  Cancer = c("Cancer", "No_Cancer")
+)
+print(cancer_exposure_table)
+```
+```{r}
+exposed_with_cancer = cancer_exposure_table["Exposed", "Cancer"]
+exposed_without_cancer = cancer_exposure_table["Exposed", "No_Cancer"]
+not_exposed_with_cancer = cancer_exposure_table["Not_Exposed", "Cancer"]
+not_exposed_without_cancer = cancer_exposure_table["Not_Exposed", "No_Cancer"]
+total_exposed = exposed_with_cancer + exposed_without_cancer
+total_not_exposed = not_exposed_with_cancer + not_exposed_without_cancer
+p_cancer_given_exposed = exposed_with_cancer / total_exposed
+p_cancer_given_not_exposed = not_exposed_with_cancer / total_not_exposed
+relative_risk = p_cancer_given_exposed / p_cancer_given_not_exposed
+cat("P(Cancer | Exposed) =", p_cancer_given_exposed, "\n")
+cat("P(Cancer | Not Exposed) =", p_cancer_given_not_exposed, "\n")
+cat("Relative Risk (RR) =", relative_risk, "\n")
+```
+## 7. Calculate the following probabilities:
+### P(pass second test and pass first test) = **0.56**
+### P(pass second test and fail first test) = **0.18**
+### P(fail second test and pass first test) = **0.14**
+### P(fail second test and fail first test) = **0.12**
+### What do the four probabilities above add up to? **1**
+
+```{r}
+p_pass_first = 0.7
+p_fail_first = 0.3
+
+p_pass_second_given_pass_first = 0.8
+p_fail_second_given_pass_first = 0.2
+
+p_pass_second_given_fail_first = 0.6
+p_fail_second_given_fail_first = 0.4
+
+p_pass_second_and_pass_first = p_pass_first * p_pass_second_given_pass_first
+p_pass_second_and_fail_first = p_fail_first * p_pass_second_given_fail_first
+p_fail_second_and_pass_first = p_pass_first * p_fail_second_given_pass_first
+p_fail_second_and_fail_first = p_fail_first * p_fail_second_given_fail_first
+
+cat("P(pass second test and pass first test) =", p_pass_second_and_pass_first, "\n")
+cat("P(pass second test and fail first test) =", p_pass_second_and_fail_first, "\n")
+cat("P(fail second test and pass first test) =", p_fail_second_and_pass_first, "\n")
+cat("P(fail second test and fail first test) =", p_fail_second_and_fail_first, "\n")
+
+total_probability = p_pass_second_and_pass_first + p_pass_second_and_fail_first + 
+                    p_fail_second_and_pass_first + p_fail_second_and_fail_first
+
+cat("\nTotal of all probabilities =", total_probability, "\n")
+```
