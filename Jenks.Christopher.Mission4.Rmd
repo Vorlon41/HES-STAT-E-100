@@ -1,0 +1,70 @@
+---
+title: "Mission 4"
+author: "Chris Jenks"
+date: "2024-10-08"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(ggplot2)
+library(readxl)
+```
+
+```{r}
+bodyPerformance = read_excel("C:/Users/User/Desktop/HarvardExtensionSchool/Stat E 100/Mission 4/bodyPerformance.xlsx")
+```
+## 1. Use R to generate a scatterplot with sit_ups_counts on the X-axis (horizonal axis) and broad_jump_cm as the Y-axis (vertical axis). Include the R code and visualization from R.
+
+```{r}
+ggplot(bodyPerformance, aes(x = sit_ups_counts, y = broad_jump_cm)) +
+  geom_point() +
+  labs(x = "Sit-ups Count", y = "Broad Jump (cm)", title = "Scatterplot of Sit-ups Count vs Broad Jump (cm)") +
+  theme_minimal()
+```
+
+## 2.	In the scatterplot generated in question 1), is the correlation positive, negative, or zero? Based on findings from the shape or pattern of the visualization, how do you know?
+```{r}
+cor(bodyPerformance$sit_ups_counts, bodyPerformance$broad_jump_cm, use = "complete.obs")
+```
+### The scatterplot correlation R = 0.7482728. It is positive. As such this is a positive correlation. Also, when evaluating the scatter plot, the plots both appear to be increasing. 
+
+## 3.	Use R to calculate the sample covariance between sit_ups_counts and broad_jump_cm. Include the R code used to generate the value. Include the units of measurement for each variable.
+
+```{r}
+data_subset = bodyPerformance[, c("sit_ups_counts", "broad_jump_cm")]
+
+cov_matrix = cov(data_subset, use = "complete.obs")
+cov_matrix
+```
+## 4.	Calculate the sample standard deviation of sit_ups_counts and broad_jump_cm using R. Include the R code used to generate the values. Include the units of measurement for each variable
+```{R}
+std_dev_sit_ups = sd(bodyPerformance$sit_ups_counts, na.rm = TRUE)
+std_dev_sit_ups
+
+std_dev_broad_jump = sd(bodyPerformance$broad_jump_cm, na.rm = TRUE)
+std_dev_broad_jump
+```
+### The standard deviation for sit ups is 14.2767. The standard deviation for broad jump is 39.868. 
+
+## 5.	Calculate the value of the sample correlation coefficient through the formula below. Use the sample standard deviation of sit_ups_counts, the sample standard deviation of broad_jump_cm, and the sample covariance between sit_ups_counts and broad_jump_cm. Indicate a) whether the sample correlation coefficient is strong, weak, or non-existent using the rubric below this question, b) whether it is positive, negative, or near zero.
+```{r}
+cov_value = cov(bodyPerformance$sit_ups_counts, bodyPerformance$broad_jump_cm, use = "complete.obs")
+
+std_dev_sit_ups = sd(bodyPerformance$sit_ups_counts, na.rm = TRUE)
+std_dev_broad_jump = sd(bodyPerformance$broad_jump_cm, na.rm = TRUE)
+
+correlation_coefficient = cov_value / (std_dev_sit_ups * std_dev_broad_jump)
+correlation_coefficient
+```
+### The correlation coefficient is 0.7482728. This is a strong positive correlation coefficient. 
+
+## 6.	Use R to generate the sample correlation coefficient value for sit_ups_counts and broad_jump_cm using the cor() function. Include the R code used. The value should match the value from question 5.
+```{r}
+correlation_value = cor(bodyPerformance$sit_ups_counts, bodyPerformance$broad_jump_cm, use = "complete.obs")
+correlation_value
+```
+### The answer does indeed match, 0.7482728
+
