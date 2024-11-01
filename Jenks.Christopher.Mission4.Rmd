@@ -1,7 +1,5 @@
 ---
 title: "Mission 4"
-author: "Chris Jenks"
-date: "2024-10-08"
 output: word_document
 ---
 
